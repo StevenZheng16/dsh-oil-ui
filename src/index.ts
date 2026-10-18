@@ -4,11 +4,22 @@ import { createUserMessage, type FileBlock, type ImageBlock } from '@deepseek-ai
 import { defineTool, type ToolRunContext, type InferValue } from '@deepseek-ai/dsh-tools';
 import '@deepseek-ai/dsh-skill';
 import '@deepseek-ai/dsh-system-prompt';
-import { loadUpstreamSkill, skillStatus, resolveActiveSkill, createSkillProvider } from './upstream.ts';
+import { loadUpstreamSkill, skillStatus, resolveActiveSkill, createSkillProvider, loadReviewerManual } from './upstream.ts';
 import { Config } from './config.ts';
 import { DesignWorkbench } from './workbench.ts';
 export { Config };
 export const name = 'dsh-oil-ui';
+
+export const MAIN_AGENT_SYSTEM_PROMPT =
+  'For UI tasks, call oil_ui_skill_status first to refresh discovery and read activeSkillName (local oil-ui-pro installs unlock without restarting), then load that Skill using the skill tool. Read and write project files directly in the current working directory. Use oil_ui_explorer for style-explorer.html comparison pages, oil_ui_shoot for screenshots/interactions/responsive checks/recordings, oil_ui_media for public-domain and museum media search/preview/fetch, and oil_ui_image for generating or editing visual assets.';
+
+export function buildSubagentSystemPrompt(reviewerManual: string): string {
+  return [
+    '当主 Agent 委派你执行界面视觉或交互评审（UI/UX Review）时，请直接按下方已内置的《视觉与交互评审手册》（`references/reviewer-manual.md`）执行，无需调用 `read_file`、`skill` 或 `oil_ui_skill_status` 重复读取该手册，评审过程中只提供客观评审意见、不修改项目文件。查看截图请用 `read_image`；需要补充 480px/180px 缩略图、遮字图（`mask: true`）或实际操作验证时请用 `oil_ui_shoot`。（若主 Agent 委派的是非评审类的常规子任务，则直接按主 Agent 的任务指令执行。）',
+    '',
+    reviewerManual.trim(),
+  ].join('\n');
+}
 
 interface OilUiCommandInvocation {
   readonly agent: Agent;
@@ -329,12 +340,35 @@ export function apply(ctx: Context, config: Config) {
     });
   });
 
+  const installSubagentPrompt = async (agent: Agent) => {
+    if (agent.session?.header?.origin !== 'subagent') return;
+    if (!agent.ctx?.systemPrompt || typeof agent.ctx.systemPrompt.section !== 'function') return;
+    const manual = await loadReviewerManual({ ...config, cwd: agent.session.header.cwd });
+    if (!manual) return;
+    try {
+      agent.ctx.systemPrompt.section({
+        name: 'oil-ui',
+        order: 70,
+        interpolate: false,
+        text: buildSubagentSystemPrompt(manual),
+      });
+    } catch {
+      /* Ignore duplicate registration if already installed on this subagent scope */
+    }
+  };
+
   ctx.inject(['systemPrompt'], ctx => {
     ctx.systemPrompt.section({
       name: 'oil-ui',
       order: 70,
       interpolate: false,
-      text: 'For UI tasks, call oil_ui_skill_status first to refresh discovery and read activeSkillName (local oil-ui-pro installs unlock without restarting), then load that Skill using the skill tool. Read and write project files directly in the current working directory. Use oil_ui_explorer for style-explorer.html comparison pages, oil_ui_shoot for screenshots/interactions/responsive checks/recordings, oil_ui_media for public-domain and museum media search/preview/fetch, and oil_ui_image for generating or editing visual assets.',
+      text: MAIN_AGENT_SYSTEM_PROMPT,
+    });
+    for (const agent of ctx.agents?.list?.() ?? []) {
+      void installSubagentPrompt(agent);
+    }
+    ctx.on?.('agent/created', async ({ agent }) => {
+      await installSubagentPrompt(agent);
     });
   });
 }

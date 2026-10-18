@@ -146,8 +146,8 @@
     },
     {
       "path": "references/reviewer-manual.md",
-      "sha256": "2b40ad10f778e45972b3d51f854e548e7793001cdc59d396aa5c12ef3483da26",
-      "size": 11598,
+      "sha256": "d725ebfa455a40717b2639b7522a57abc2ad74982965d6f093abf95a109abcd7",
+      "size": 11705,
       "mode": "0644"
     },
     {
@@ -176,8 +176,8 @@
     },
     {
       "path": "references/visual-review.md",
-      "sha256": "b4cd68bb6e1bc512d1d9dc6025ee87ff95352e82ffbe1b13aab1c9f60c7e29ec",
-      "size": 3883,
+      "sha256": "188d3d08411b1a6b6fb4ba2db80172e4b44bd6e5fdafae92a2cff9013f9a45d7",
+      "size": 4116,
       "mode": "0644"
     },
     {

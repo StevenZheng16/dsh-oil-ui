@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { Context } from '@deepseek-ai/cordis';
 import type { ToolDefinition, ToolRunContext } from '@deepseek-ai/dsh-tools';
 import SkillRegistry, { type SkillRegistration, type SkillProvider } from '@deepseek-ai/dsh-skill';
+import SystemPrompt, { renderPrompt } from '@deepseek-ai/dsh-system-prompt';
 import { apply } from '../src/index.ts';
 import { skillStatus } from '../src/upstream.ts';
 
@@ -233,4 +234,107 @@ it('triggers one-time Pro recommendation once on lite edition and reports cached
     await rm(root, { recursive: true, force: true });
   }
 });
+
+it('automatically injects reviewer-manual.md into subagent system prompt and shadows main agent prompt without conflict', async () => {
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'dsh-oil-ui-subagent-')));
+  const proDir = join(root, '.dsh/skills/oil-ui-pro');
+  const rootCtx = new Context();
+  new SystemPrompt(rootCtx, {});
+  const createdListeners: ((payload: { agent: unknown }) => Promise<void> | void)[] = [];
+  const pending: Promise<unknown>[] = [];
+  const disposers: (() => void | Promise<void>)[] = [];
+
+  const hostCtx = {
+    systemPrompt: rootCtx.systemPrompt,
+    agents: { list: () => [] },
+    effect(fn: () => () => void | Promise<void>) {
+      disposers.push(fn());
+    },
+    inject(services: string[], fn: (ctx: unknown) => unknown) {
+      if (services.includes('systemPrompt')) {
+        pending.push(Promise.resolve(fn(hostCtx)));
+      }
+    },
+    on(event: string, listener: (payload: { agent: unknown }) => Promise<void> | void) {
+      if (event === 'agent/created') createdListeners.push(listener);
+      return () => {};
+    },
+  };
+
+  try {
+    apply(hostCtx as unknown as Context, { previewPort: 0, preferPro: true });
+    await Promise.all(pending);
+
+    const mainSections: { name: string; order: number; interpolate?: boolean; text: string }[] = [];
+    const mainAgent = {
+      id: 'main-1',
+      session: { id: 'main-1', header: { cwd: root } },
+      ctx: {
+        systemPrompt: {
+          section(sec: { name: string; order: number; interpolate?: boolean; text: string }) {
+            mainSections.push(sec);
+            return () => {};
+          },
+        },
+      },
+    };
+    for (const listener of createdListeners) await listener({ agent: mainAgent });
+    expect(mainSections).toHaveLength(0);
+    const mainPrompt = renderPrompt(await rootCtx.systemPrompt.assemble({}));
+    expect(mainPrompt).toContain('call oil_ui_skill_status first');
+    expect(mainPrompt).not.toContain('视觉与交互评审手册');
+
+    const subSections: { name: string; order: number; interpolate?: boolean; text: string }[] = [];
+    const liteSubagent = {
+      id: 'sub-lite',
+      session: { id: 'sub-lite', header: { cwd: root, origin: 'subagent', parentSession: 'main-1' } },
+      ctx: {
+        systemPrompt: {
+          section(sec: { name: string; order: number; interpolate?: boolean; text: string }) {
+            subSections.push(sec);
+            return () => {};
+          },
+        },
+      },
+    };
+    for (const listener of createdListeners) await listener({ agent: liteSubagent });
+    expect(subSections).toHaveLength(1);
+    expect(subSections[0]!.name).toBe('oil-ui');
+    expect(subSections[0]!.text).toContain('# 视觉与交互评审手册 (子 Agent 专用)');
+    expect(subSections[0]!.text).toContain('oil_ui_shoot');
+    expect(subSections[0]!.text).toContain('read_image');
+    expect(subSections[0]!.text).not.toContain('call oil_ui_skill_status first');
+
+    await mkdir(join(proDir, 'references'), { recursive: true });
+    await writeFile(
+      join(proDir, 'SKILL.md'),
+      '---\nname: oil-ui-pro\ndescription: Pro\nmetadata:\n  version: 9.9.9\n---\nPro body',
+    );
+    await writeFile(
+      join(proDir, 'references/reviewer-manual.md'),
+      '# 视觉与交互评审手册 (子 Agent 专用 - Pro 专属标识)\n能用截图工具时，用它出缩略图和遮字图。',
+    );
+    const proSubSections: { name: string; order: number; interpolate?: boolean; text: string }[] = [];
+    const proSubagent = {
+      id: 'sub-pro',
+      session: { id: 'sub-pro', header: { cwd: root, origin: 'subagent', parentSession: 'main-1' } },
+      ctx: {
+        systemPrompt: {
+          section(sec: { name: string; order: number; interpolate?: boolean; text: string }) {
+            proSubSections.push(sec);
+            return () => {};
+          },
+        },
+      },
+    };
+    for (const listener of createdListeners) await listener({ agent: proSubagent });
+    expect(proSubSections).toHaveLength(1);
+    expect(proSubSections[0]!.text).toContain('Pro 专属标识');
+    expect(proSubSections[0]!.text).toContain('能用 `oil_ui_shoot` 时');
+  } finally {
+    await Promise.all(disposers.map(dispose => dispose()));
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 

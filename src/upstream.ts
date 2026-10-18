@@ -147,7 +147,14 @@ export async function checkSkillUpdate(
         timeout: 90_000,
       });
       if (active.edition === 'lite') {
-        for (const rel of ['SKILL.md', 'references/tools.md', 'references/style-explorer.md', 'references/media.md']) {
+        for (const rel of [
+          'SKILL.md',
+          'references/tools.md',
+          'references/style-explorer.md',
+          'references/media.md',
+          'references/visual-review.md',
+          'references/reviewer-manual.md',
+        ]) {
           const mdPath = join(targetDir, ...rel.split('/'));
           try {
             const raw = await readFile(mdPath, 'utf8');
@@ -242,7 +249,15 @@ async function ensureHarnessProDirectory(sourceDir: string): Promise<string> {
     return sourceDir;
   }
   const skillRaw = await readFile(join(sourceDir, 'SKILL.md'), 'utf8');
-  const digest = createHash('sha256').update(sourceDir).update('\0').update(skillRaw).update('\0').update(toolsRaw).digest('hex').slice(0, 12);
+  const digest = createHash('sha256')
+    .update('v2\0')
+    .update(sourceDir)
+    .update('\0')
+    .update(skillRaw)
+    .update('\0')
+    .update(toolsRaw)
+    .digest('hex')
+    .slice(0, 12);
   const dshHome = process.env.DSH_HOME || join(homedir(), '.dsh');
   const compiledDir = join(dshHome, 'cache', 'dsh-oil-ui', `oil-ui-pro-${digest}`);
   const compiledSkill = join(compiledDir, 'SKILL.md');
@@ -260,6 +275,23 @@ export async function resolveActiveSkill(options: SkillOptions = {}): Promise<Ac
   }
   const directory = await ensureHarnessProDirectory(pro);
   return { edition: 'pro', name: 'oil-ui-pro', directory, sourceDirectory: pro, source: 'local-pro' };
+}
+
+export async function loadReviewerManual(options: SkillOptions = {}): Promise<string> {
+  const active = await resolveActiveSkill(options);
+  const candidates = [
+    join(active.directory, 'references', 'reviewer-manual.md'),
+    join(bundledSkillDirectory, 'references', 'reviewer-manual.md'),
+  ];
+  for (const path of candidates) {
+    try {
+      const raw = await readFile(path, 'utf8');
+      return transformSkillMarkdown('references/reviewer-manual.md', raw);
+    } catch {
+      /* Fall back to bundled reviewer manual when custom directory omits references/ */
+    }
+  }
+  return '';
 }
 
 export async function loadUpstreamSkill(options: SkillOptions = {}): Promise<SkillRegistration> {

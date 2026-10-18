@@ -118,6 +118,31 @@ export function transformSkillMarkdown(relativePath: string, raw: string): strin
       .replace(/按宿主生成工具自己的输入和编辑规则来。/g, '用 `oil_ui_image` 生成或编辑（支持 `mode: "generate"` 文生图、`mode: "edit"` 传入 1–16 张本地参考图做同模多材质变体、以及 `background: "transparent"` 透明底抠图）。');
   }
 
+  if (normalized === 'references/visual-review.md') {
+    return raw
+      .replace(
+        /请读取 references\/reviewer-manual\.md，按照【全新界面与改版评审】标准/g,
+        '按照你系统提示词中已内置的《视觉与交互评审手册》【全新界面与改版评审】标准',
+      )
+      .replace(
+        /请读取 references\/reviewer-manual\.md，按照【存量已有界面润色评审】标准/g,
+        '按照你系统提示词中已内置的《视觉与交互评审手册》【存量已有界面润色评审】标准',
+      )
+      .replace(
+        /模板里的路径换成本 Skill 目录下的绝对路径：子 Agent 的工作目录不是本目录。/g,
+        '子 Agent 启动时已由插件自动将《视觉与交互评审手册》（`references/reviewer-manual.md`）注入其系统提示词，主 Agent 只需调用 `subagent` 传入下方交接清单与对应模式指令，无需附带手册路径，也无需让子 Agent 再次读取手册。',
+      );
+  }
+
+  if (normalized === 'references/reviewer-manual.md') {
+    return raw
+      .replace(
+        /能用截图工具时，用它出缩略图和遮字图。/g,
+        '能用 `oil_ui_shoot` 时，用它出缩略图（`size: "480x300"` 或 `"180x390"`）和遮字图（`mask: true`），并用 `read_image` 查看截图。',
+      )
+      .replace(/\[游玩\]\(play\.md\)/g, '[游玩](references/play.md)');
+  }
+
   return raw;
 }
 

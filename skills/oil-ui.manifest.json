@@ -1,0 +1,250 @@
+{
+  "name": "oil-ui",
+  "version": "0.23.6",
+  "source": {
+    "description": "The source directory is supplied by the caller and is intentionally not recorded as a machine-specific path.",
+    "rootSymlinkResolved": true
+  },
+  "symlinkAudit": {
+    "checkedWithinSuppliedRoot": true,
+    "resolvedSourceSymlinks": [],
+    "outputContainsSymlinks": false
+  },
+  "exclusions": {
+    "rules": [
+      {
+        "name": ".git",
+        "reason": "Repository metadata is not part of the Skill runtime."
+      },
+      {
+        "name": ".DS_Store",
+        "reason": "macOS Finder metadata is not part of the Skill runtime."
+      },
+      {
+        "name": "__pycache__",
+        "reason": "Python bytecode cache is not part of the Skill runtime."
+      },
+      {
+        "name": "*.pyc",
+        "reason": "Compiled Python bytecode is a regenerable cache."
+      },
+      {
+        "name": "assets/readme",
+        "reason": "README showcase images are not runtime resources."
+      },
+      {
+        "name": "README.en.md",
+        "reason": "Duplicate English README; README.md is retained."
+      }
+    ],
+    "paths": [
+      {
+        "path": ".git",
+        "reason": "Excluded from the runtime distribution (repository metadata, caches or documentation-only files)."
+      },
+      {
+        "path": "assets/readme",
+        "reason": "Excluded from the runtime distribution (repository metadata, caches or documentation-only files)."
+      },
+      {
+        "path": "README.en.md",
+        "reason": "Excluded from the runtime distribution (repository metadata, caches or documentation-only files)."
+      }
+    ]
+  },
+  "fileCount": 32,
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "81f2db0af12e2c1268f92a7e2aa5a826dedbb5778f288b2d988ea07bfe6c69d5",
+      "size": 113,
+      "mode": "0644"
+    },
+    {
+      "path": "assets/fonts/instrument-serif/InstrumentSerif-Regular.ttf",
+      "sha256": "498efd461f6ddfcb7a111bf9a565709d2085d48201d501ead960d93e84ffbb88",
+      "size": 70012,
+      "mode": "0644"
+    },
+    {
+      "path": "assets/fonts/instrument-serif/OFL.txt",
+      "sha256": "129ed7618959716959f2941fdd5b49e0ad6e6c1d78726761786a00253d865521",
+      "size": 4405,
+      "mode": "0644"
+    },
+    {
+      "path": "assets/logo.png",
+      "sha256": "35f58a88e195bf4472e2f0fc795122fb9396464cbb3f0d7a2cb639b6c004f972",
+      "size": 41901,
+      "mode": "0644"
+    },
+    {
+      "path": "assets/style-explorer.html",
+      "sha256": "b15c732957c9937894e8f2fa18141de5825893398593a993c1b3b3a6e798db94",
+      "size": 39238,
+      "mode": "0644"
+    },
+    {
+      "path": "assets/vendor/alpine.min.js",
+      "sha256": "1d8911c7b8a55bd0ceb79896251ca00d575915e2cd4348e8007a850e59ba0dc0",
+      "size": 55966,
+      "mode": "0644"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "d44a3ca218007a85d3be41a0b76553d746e42336c7a63c6c6687d2619199c3c4",
+      "size": 1064,
+      "mode": "0644"
+    },
+    {
+      "path": "README.md",
+      "sha256": "c2edb29b06c4fc107e79bff595e62df9825758a151d256e80c5bbed306d503a5",
+      "size": 8589,
+      "mode": "0644"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "sha256": "4137636b55c3c5c13005f4c895c65e593b32f3d6c38c6b908ee4d6d3c7ca44eb",
+      "size": 7771,
+      "mode": "0644"
+    },
+    {
+      "path": "references/design-direction.md",
+      "sha256": "8e5262da3a653cd2246063dda3311105aef10eeb3128ba358ac06c2597e0d234",
+      "size": 19736,
+      "mode": "0644"
+    },
+    {
+      "path": "references/direction-persuasion.md",
+      "sha256": "511c30fe1330318a01a401024855b86666a07fcdb92a7c647d9a4a03a3b43690",
+      "size": 2141,
+      "mode": "0644"
+    },
+    {
+      "path": "references/layout-and-viewport.md",
+      "sha256": "f7de8794bddbe5a3ba8896970d80f97d3b5ee65a3420ae01cfac6afc5646990b",
+      "size": 1568,
+      "mode": "0644"
+    },
+    {
+      "path": "references/media.md",
+      "sha256": "4e1b42f8567f55c3befac75f380f262e43a53845627793a80426a447cc7ade46",
+      "size": 17814,
+      "mode": "0644"
+    },
+    {
+      "path": "references/motion.md",
+      "sha256": "d4bb6feb692b86812d459534d1f443c500dbc953ee5273db17108067aab91f76",
+      "size": 11166,
+      "mode": "0644"
+    },
+    {
+      "path": "references/play.md",
+      "sha256": "e9a100e93ce4f145ddb93afd34dd0ea22bbffdbc2a83d6eabac685ab0964e264",
+      "size": 1902,
+      "mode": "0644"
+    },
+    {
+      "path": "references/reviewer-manual.md",
+      "sha256": "2b40ad10f778e45972b3d51f854e548e7793001cdc59d396aa5c12ef3483da26",
+      "size": 11598,
+      "mode": "0644"
+    },
+    {
+      "path": "references/scroll-narrative.md",
+      "sha256": "4e91a56335c44da03693e1d4496f5bcbef4e95ff12d4b62fd9d0680d8d12e3a7",
+      "size": 9819,
+      "mode": "0644"
+    },
+    {
+      "path": "references/style-explorer.md",
+      "sha256": "f7be62a1c4952dc784c1d47718261942e92cb23d3c162aa016302e71de2964a9",
+      "size": 4213,
+      "mode": "0644"
+    },
+    {
+      "path": "references/tools.md",
+      "sha256": "7f01bd98f643d20c2df0eea7b90540e75f1bd5933213c44bdd7c9d9e5015768f",
+      "size": 7825,
+      "mode": "0644"
+    },
+    {
+      "path": "references/visual-language.md",
+      "sha256": "225f8a04b1cda046dfed56c91877acf29e7069523aa89fa1c8143ca2fa4c70dd",
+      "size": 11248,
+      "mode": "0644"
+    },
+    {
+      "path": "references/visual-review.md",
+      "sha256": "b4cd68bb6e1bc512d1d9dc6025ee87ff95352e82ffbe1b13aab1c9f60c7e29ec",
+      "size": 3883,
+      "mode": "0644"
+    },
+    {
+      "path": "scripts/build_explorer.py",
+      "sha256": "bb05bef6ffafeeeaf08508d1b4993a6d880bc7a8e22b0d04765e1f616b13ae72",
+      "size": 42746,
+      "mode": "0644"
+    },
+    {
+      "path": "scripts/check_update.py",
+      "sha256": "49bb8a2d423b3a2f110f9b777df8de55f8d4c629c8ee79485df4372e2b237f3a",
+      "size": 14393,
+      "mode": "0755"
+    },
+    {
+      "path": "scripts/check_update.sh",
+      "sha256": "eeebaf44eb29d61784690e09e0d8d306a44ca2a3025c48a42928b7ac7174d7d4",
+      "size": 1254,
+      "mode": "0755"
+    },
+    {
+      "path": "scripts/curate-media.mjs",
+      "sha256": "cce1aa322f5e7aa09ea6fecd41ebc7980fba16b697b970f34aa739f8ed3f301d",
+      "size": 64713,
+      "mode": "0644"
+    },
+    {
+      "path": "scripts/recommend_once.py",
+      "sha256": "c1b28d9cec6d47ab637e65fa19b3b183ddddf4a4a950b5bdc6f11aa113bb9672",
+      "size": 2275,
+      "mode": "0644"
+    },
+    {
+      "path": "scripts/shoot.mjs",
+      "sha256": "1349cf6e3f5c54b3478884dff96a9b585c1825e9a0c63ae1777afcfa165116bf",
+      "size": 134707,
+      "mode": "0644"
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "08db7a7bf55f12d00263ec8fc115d542a1be637c4b2297324ae9e47f1f354e03",
+      "size": 18863,
+      "mode": "0644"
+    },
+    {
+      "path": "tests/test_build_explorer.py",
+      "sha256": "c1ca470cff8449367a548825ac2647eb534b66366b4de2b6d3add00cebf6460a",
+      "size": 63312,
+      "mode": "0644"
+    },
+    {
+      "path": "tests/test_check_update.py",
+      "sha256": "3dac4095924b3bfeaf5311c89d6d423819d0983689f086c2d23d2bfbbc715c86",
+      "size": 20587,
+      "mode": "0644"
+    },
+    {
+      "path": "tests/test_curate_media.py",
+      "sha256": "7dc34eb0c7009f35cb22ad1be935b267598cd0d163e17f89ef1312be2cffc976",
+      "size": 28059,
+      "mode": "0644"
+    },
+    {
+      "path": "tests/test_shoot.py",
+      "sha256": "4cdbe2f008c77b7cee7fabe220e1e8d3199c9e02228c1acdfdfbf3004d4f0f35",
+      "size": 137213,
+      "mode": "0644"
+    }
+  ]
+}
